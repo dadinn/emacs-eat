@@ -477,7 +477,7 @@ prompt annotation."
   :group 'eat-ui)
 
 (defcustom eat-exec-hook nil
-  "Hook run after `eat' executes a commamnd.
+  "Hook run after `eat' executes a command.
 
 The hook is run with the process run in the terminal as the only
 argument."
