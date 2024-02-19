@@ -7072,20 +7072,41 @@ PROGRAM."
              (alist-get method eat-tramp-shells nil nil 'equal)))
       eat-shell))
 
+(defvar eat--terminal-buffers ())
+
+(defun eat--select-terminal (prompt &optional require-match? default)
+  (completing-read
+   prompt
+   (mapcar (function car)
+    eat--terminal-buffers)
+   nil require-match? nil nil default))
+
+(defun format-terminal-buffer-name (terminal-name)
+  (if (not (string-match "\\*" terminal-name))
+      (format "*eat*<%s>" terminal-name)
+    terminal-name))
+
 (defun eat--1 (program arg display-buffer-fn)
   "Start a new Eat terminal emulator in a buffer.
 
 PROGRAM and ARG is same as in `eat' and `eat-other-window'.
 DISPLAY-BUFFER-FN is the function to display the buffer."
-  (let ((program (or program (funcall eat-default-shell-function)))
-        (buffer
-         (cond
-          ((numberp arg)
-           (get-buffer-create (format "%s<%d>" eat-buffer-name arg)))
-          (arg
-           (generate-new-buffer eat-buffer-name))
-          (t
-           (get-buffer-create eat-buffer-name)))))
+  (let* ((program (or program (funcall eat-default-shell-function)))
+         (terminal-name (and arg (eat--select-terminal "Terminal name: ")))
+         (named-terminal?
+          (and terminal-name
+           (not (string-empty-p terminal-name))
+           (not (string= terminal-name eat-buffer-name))))
+         (terminal-buffer-name
+          (if named-terminal?
+              ;;TODO: if terminal name contains * characters then don't apply buffer formatting.
+              (format-terminal-buffer-name terminal-name)
+            eat-buffer-name))
+         (buffer (get-buffer-create terminal-buffer-name)))
+    (when named-terminal?
+     (add-to-list
+      (quote eat--terminal-buffers)
+      (cons terminal-name terminal-buffer-name)))
     (with-current-buffer buffer
       (unless (eq major-mode #'eat-mode)
         (eat-mode))
