@@ -7104,6 +7104,12 @@ using ARGS."
     (format "%s<%s>" eat-buffer-name terminal-name))
    (t terminal-name)))
 
+(defun eat--format-terminal-name (buffer-name)
+  (and (string-match
+        (format "%s<\\([^<>]+\\)>" (regexp-quote eat-buffer-name))
+        buffer-name)
+       (match-string 1 buffer-name)))
+
 (defun eat--1 (program arg display-buffer-fn)
   "Start a new Eat terminal emulator in a buffer.
 
@@ -7129,6 +7135,17 @@ DISPLAY-BUFFER-FN is the function to display the buffer."
         (eat-exec terminal-buffer (buffer-name) "/usr/bin/env" nil
                   (list "sh" "-c" program)))
       terminal-buffer)))
+
+(defun eat--deregister-terminal (process)
+  (let ((terminal-buffer-name (buffer-name (process-buffer process))))
+    (when terminal-buffer-name
+      (setq eat--named-terminals
+            (remove (eat--format-terminal-name terminal-buffer-name)
+                    eat--named-terminals)))))
+
+(add-hook
+ (quote eat-exit-hook)
+ (function eat--deregister-terminal))
 
 ;;;###autoload
 (defun eat (&optional program arg)
