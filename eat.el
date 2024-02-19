@@ -7117,6 +7117,18 @@ DISPLAY-BUFFER-FN is the function to display the buffer."
                   (list "sh" "-c" program)))
       buffer)))
 
+(defun eat--deregister-terminal (process)
+  (let ((terminal-buffer-name (buffer-name (process-buffer process))))
+    (when terminal-buffer-name
+      (setq eat--terminal-buffers
+       (seq-filter
+        (lambda (pair) (not (string= terminal-buffer-name (cdr pair))))
+        eat--terminal-buffers)))))
+
+(add-hook
+ (quote eat-exit-hook)
+ (function eat--deregister-terminal))
+
 ;;;###autoload
 (defun eat (&optional program arg)
   "Start a new Eat terminal emulator in a buffer.
