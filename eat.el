@@ -7147,6 +7147,38 @@ DISPLAY-BUFFER-FN is the function to display the buffer."
  (quote eat-exit-hook)
  (function eat--deregister-terminal))
 
+(defun eat-rename-terminal (&optional arg)
+  (interactive "P")
+  (let* ((original-buffer-name (buffer-name))
+         (original-terminal-name
+          (eat--format-terminal-name original-buffer-name))
+         (target-terminal-name
+          (and (not arg)
+           (eat--select-terminal-name t "Rename %s to: "
+            (if original-terminal-name
+                (format "terminal \"%s\"" original-terminal-name)
+              "default terminal"))))
+         (target-buffer-name
+          (eat--format-buffer-name target-terminal-name)))
+    (if (and (not target-terminal-name)
+             (get-buffer target-buffer-name))
+        (message "The default terminal is already in use")
+      (with-current-buffer original-buffer-name
+        (rename-buffer target-buffer-name))
+      (when original-terminal-name
+        (setq eat--named-terminals
+              (remove original-terminal-name eat--named-terminals)))
+      (if arg (message "Renamed terminal \"%s\" as the default terminal" original-terminal-name)
+        (add-to-list
+         (quote eat--named-terminals)
+         target-terminal-name)
+        (message
+         "Renamed %s to \"%s\""
+         (if original-terminal-name
+             (format "terminal \"%s\"" original-terminal-name)
+           "default terminal")
+         target-terminal-name)))))
+
 ;;;###autoload
 (defun eat (&optional program arg)
   "Start a new Eat terminal emulator in a buffer.
