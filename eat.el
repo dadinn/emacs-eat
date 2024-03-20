@@ -5827,7 +5827,7 @@ EVENT is the mouse event."
   (let ((map (eat-term-make-keymap
               #'eat-self-input '(:ascii :arrow :navigation :function)
               '([?\e ?\C-m]))))
-    (define-key map [?\C-\M-m] #'eat-semi-char-mode)
+    (define-key map [?\C-\M-m] #'eat-default-mode)
     (define-key map [xterm-paste] #'eat-xterm-paste)
     map)
   "Keymap for Eat char mode.")
@@ -5922,6 +5922,18 @@ EVENT is the mouse event."
   (eat--char-mode +1)
   (eat--grab-mouse nil eat--mouse-grabbing-type)
   (force-mode-line-update))
+
+(defcustom eat-line-default-mode nil
+  "Use `eat-line-mode' instead of `eat-semi-char-mode' as default minor mode
+when opening a new terminal or leaving char mode."
+  :type 'boolean
+  :group 'eat-ui)
+
+(defun eat-default-mode ()
+  (interactive)
+  (if eat-line-default-mode
+      (eat-line-mode)
+    (eat-semi-char-mode)))
 
 (defvar eat--eshell-semi-char-mode)
 (defvar eat--eshell-char-mode)
@@ -6961,7 +6973,7 @@ same Eat buffer.  The hook `eat-exec-hook' is run after each exec."
       (unless (= (point-min) (point-max))
         (insert "\n\n"))
       (setq eat-terminal (eat-term-make buffer (point)))
-      (eat-semi-char-mode)
+      (eat-default-mode)
       (when-let* ((window (get-buffer-window nil t)))
         (with-selected-window window
           (eat-term-resize eat-terminal (window-max-chars-per-line)
