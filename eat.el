@@ -7132,7 +7132,7 @@ DISPLAY-BUFFER-FN is the function to display the buffer."
       (funcall display-buffer-fn terminal-buffer)
       (unless (and eat-terminal
                    (eat-term-parameter eat-terminal 'eat--process))
-        (eat-exec terminal-buffer (buffer-name) "/usr/bin/env" nil
+        (eat-exec terminal-buffer "eat" "/usr/bin/env" nil
                   (list "sh" "-c" program)))
       terminal-buffer)))
 
