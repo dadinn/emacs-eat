@@ -7183,19 +7183,16 @@ DISPLAY-BUFFER-FN is the function to display the buffer."
 (defun eat (&optional program arg)
   "Start a new Eat terminal emulator in a buffer.
 
-Start a new Eat session, or switch to an already active session.
+Start a new un-named Eat terminal, or switch to an already existing one.
 Return the buffer selected (or created).
 
-With a non-numeric prefix ARG, create a new session.
-
-With a numeric prefix ARG (like \\[universal-argument] 42 \\[eat]),
-switch to the session with that number, or create it if it doesn't
-already exist.
+With a prefix ARG, create a new named terminal, or switch to an already
+existing one by selecting a terminal name.
 
 With double prefix argument ARG, ask for the program to run and run it
-in a newly created session.
+in a newly created or existing named terminal by selecting a terminal name.
 
-PROGRAM can be a shell command."
+PROGRAM must be a shell command."
   (interactive
    (list (when (equal current-prefix-arg '(16))
            (read-shell-command "Run program: "
@@ -7207,18 +7204,16 @@ PROGRAM can be a shell command."
 (defun eat-other-window (&optional program arg)
   "Start a new Eat terminal emulator in a buffer in another window.
 
-Start a new Eat session, or switch to an already active session.
+Start a new un-named Eat terminal, or switch to an already existing one.
 Return the buffer selected (or created).
 
-With a non-numeric prefix ARG, create a new session.
-
-With a numeric prefix ARG switch to the session with that number, or
-create it if it doesn't already exist.
+With a prefix ARG, create a new named terminal, or switch to an already
+existing one by selecting a terminal name.
 
 With double prefix argument ARG, ask for the program to run and run it
-in a newly created session.
+in a newly created or existing named terminal by selecting a terminal name.
 
-PROGRAM can be a shell command."
+PROGRAM must be a shell command."
   (interactive
    (list (when (equal current-prefix-arg '(16))
            (read-shell-command "Run program: "
@@ -7916,14 +7911,11 @@ allowed."
 (defun eat-project (&optional arg)
   "Start Eat in the current project's root directory.
 
-Start a new Eat session, or switch to an already active session.
+Start a new un-named Eat terminal, or switch to an already existing one.
 Return the buffer selected (or created).
 
-With a non-numeric prefix ARG, create a new session.
-
-With a numeric prefix ARG (like
-\\[universal-argument] 42 \\[eat-project]), switch to the session with
-that number, or create it if it doesn't already exist."
+With a prefix ARG, create a new named terminal, or switch to an already
+existing one by selecting a terminal name."
   (interactive "P")
   (require 'project)
   (let* ((default-directory (project-root (project-current t)))
@@ -7934,14 +7926,13 @@ that number, or create it if it doesn't already exist."
 (defun eat-project-other-window (&optional arg)
   "Start Eat in the current project root directory in another window.
 
-Start a new Eat session, or switch to an already active session.
+Start a new Eat terminal, or switch to an already active terminal.
 Return the buffer selected (or created).
 
-With a non-numeric prefix ARG, create a new session.
+With a non-numeric prefix ARG, create a new terminal.
 
-With a numeric prefix ARG (like
-\\[universal-argument] 42 \\[eat-project]), switch to the session with
-that number, or create it if it doesn't already exist."
+With a prefix ARG, switch to a named terminal with by selecting it,
+or create it if it doesn't already exist."
   (interactive "P")
   (require 'project)
   (let* ((default-directory (project-root (project-current t)))
