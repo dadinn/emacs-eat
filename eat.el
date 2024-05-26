@@ -7094,13 +7094,19 @@ PROGRAM."
     eat--terminal-buffers)
    nil require-match? nil nil default))
 
-(defun format-terminal-buffer-name (terminal-name)
+(defun eat--format-buffer-name (terminal-name)
   (cond
    ((string-empty-p terminal-name)
     eat-buffer-name)
    ((not (string-match "\\*" terminal-name))
-    (format "*eat*<%s>" terminal-name))
+    (format "%s<%s>" eat-buffer-name terminal-name))
    (t terminal-name)))
+
+(defun eat--format-terminal-name (buffer-name)
+  (and (string-match
+        (format "%s<\\([^<>]+\\)>" (regexp-quote eat-buffer-name))
+        buffer-name)
+       (match-string 1 buffer-name)))
 
 (defun eat--1 (program arg display-buffer-fn)
   "Start a new Eat terminal emulator in a buffer.
